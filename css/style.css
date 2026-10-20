@@ -598,7 +598,7 @@ main { flex: 1 0 auto; }   /* keeps the footer at the bottom on short pages */
 .about-services {
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
-  padding: var(--block) 0;
+  padding-block: var(--block);
   display: flex;
   flex-direction: column;
   gap: clamp(48px, 7vw, 88px);
