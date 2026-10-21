@@ -20,6 +20,8 @@
   --font: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+body.page-white { --bg: #ffffff; }
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
