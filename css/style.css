@@ -21,6 +21,7 @@
 }
 
 body.page-white { --bg: #ffffff; }
+body.page-blue { --bg: #dfe6ec; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
