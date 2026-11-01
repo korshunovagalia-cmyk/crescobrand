@@ -4,16 +4,6 @@
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* --- announcement bar -------------------------------------------------- */
-  var announce = document.getElementById('announce');
-  var announceClose = document.querySelector('.announce__close');
-  if (announce && announceClose) {
-    announceClose.addEventListener('click', function () {
-      announce.style.display = 'none';
-      try { localStorage.setItem('cresco-announce-dismissed', '1'); } catch (e) {}
-    });
-  }
-
   /* --- hero title typewriter --------------------------------------------- */
   var typeEl = document.querySelector('.type');
 
