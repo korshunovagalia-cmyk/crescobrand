@@ -218,6 +218,32 @@
     window.requestAnimationFrame(tick);
   }
 
+
+  /* --- showreel: stopped by default; the button plays it with sound,
+         clicking the video pauses it (no native controls overlay) -------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-showreel]'), function (reel) {
+    var video = reel.querySelector('video');
+    var btn = reel.querySelector('.showreel__btn');
+    if (!video || !btn) return;
+
+    btn.addEventListener('click', function () {
+      reel.classList.add('is-playing', 'is-started');
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    });
+
+    video.addEventListener('click', function () {
+      if (video.paused) return;
+      video.pause();
+      reel.classList.remove('is-playing');
+    });
+
+    video.addEventListener('ended', function () {
+      reel.classList.remove('is-playing', 'is-started');
+      video.currentTime = 0;
+    });
+  });
+
   /* --- mobile navigation ----------------------------------------------- */
   var toggle = document.querySelector('.nav__toggle');
   var overlay = document.querySelector('.nav__overlay');
