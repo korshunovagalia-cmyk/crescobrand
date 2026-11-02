@@ -31,10 +31,9 @@
   --font: 'Mona Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-/* per-project light grounds (kept from the previous system) */
+/* project (work) pages sit on white */
 body.page-white { --bg: #ffffff; }
-body.page-blue  { --bg: #dfe6ec; }
-body.page-mint  { --bg: #f9fbfa; }
+body.page-grey  { --bg: #dcdcdc; }   /* studio */
 
 .is-dark {
   --bg: var(--ink);
@@ -102,7 +101,6 @@ a { color: inherit; text-decoration: none; }
 .card__title,
 .big-line,
 .kicker,
-.contact-list__value,
 .marquee__track,
 .nav__overlay a {
   font-weight: 760;
@@ -732,35 +730,6 @@ body.nav-open .nav { background: var(--ink); color: var(--red); }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee__track { transform: none !important; }
-}
-
-/* ------------------------------------------------------------ contact --- */
-
-.contact-list { padding-bottom: var(--block); }
-
-.contact-list__row {
-  display: grid;
-  grid-template-columns: 9rem 1fr;
-  gap: var(--gutter);
-  align-items: baseline;
-  padding: clamp(18px, 2.2vw, 30px) 0;
-  border-top: 1px solid var(--rule);
-}
-
-.contact-list__row:last-child { border-bottom: 1px solid var(--rule); }
-
-.contact-list__value {
-  font-size: clamp(2rem, 5.5vw, 5rem);
-  line-height: 1;
-  transition: opacity .25s var(--ease);
-}
-
-a.contact-list__value:hover { opacity: .6; }
-
-@media (max-width: 720px) {
-  .contact-list__row { grid-template-columns: 1fr; gap: 10px; }
-  /* scale with the screen so the email always stays on one line */
-  .contact-list__value { font-size: 7.4vw; white-space: nowrap; }
 }
 
 /* ----------------------------------------------------------- footer --- */
