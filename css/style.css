@@ -24,6 +24,7 @@
   --page-max: 1800px;
   --radius: 20px;
   --radius-lg: 30px;
+  --nav-h: 76px;           /* fixed header height; hero fills the rest of the screen */
 
   --block: clamp(80px, 10vw, 160px);
   --ease: cubic-bezier(.2, .6, .2, 1);
@@ -165,7 +166,15 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.05;
 }
 
-.big-line .thin { font-weight: 400; }
+
+/* scroll-driven statement: one row is heavy at a time */
+.big-line__row {
+  display: block;
+  font-weight: 400;
+  transition: font-weight .6s var(--ease);
+}
+
+.big-line__row.is-bold { font-weight: 760; }
 
 /* ---------------------------------------------------------------- nav --- */
 
@@ -174,7 +183,8 @@ a { color: inherit; text-decoration: none; }
   top: 0;
   z-index: 100;
   background: var(--bg);
-  padding: 18px var(--gutter);
+  height: var(--nav-h);
+  padding: 0 var(--gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -229,7 +239,7 @@ a { color: inherit; text-decoration: none; }
   display: none;
   background: none; border: 0; padding: 0 0 2px;
   font: inherit; font-size: 16px;
-  text-transform: uppercase; color: inherit; cursor: pointer;
+  text-transform: uppercase; color: inherit;
   border-bottom: 1px solid currentColor;
 }
 
@@ -260,6 +270,7 @@ body.nav-open .nav { background: var(--ink); color: var(--red); }
   .nav__cta { display: none; }
   .nav__toggle { display: block; }
   .nav__logo { width: 34px; }
+  :root { --nav-h: 64px; }
 }
 
 /* --------------------------------------------------------------- hero --- */
@@ -273,7 +284,7 @@ body.nav-open .nav { background: var(--ink); color: var(--red); }
 
 /* homepage hero: intro line on top, giant wordmark at the foot */
 .hero-home {
-  min-height: calc(100svh - 120px);
+  min-height: calc(100svh - var(--nav-h));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -284,7 +295,7 @@ body.nav-open .nav { background: var(--ink); color: var(--red); }
 .hero-home__intro {
   margin: 0;
   max-width: 26ch;
-  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  font-size: clamp(1rem, 1.5vw, 1.375rem);
   line-height: 1.2;
   font-weight: 500;
   letter-spacing: -.01em;
@@ -430,7 +441,6 @@ body.nav-open .nav { background: var(--ink); color: var(--red); }
   text-transform: uppercase;
   letter-spacing: .02em;
   white-space: nowrap;
-  cursor: pointer;
   transition: background .25s var(--ease), color .25s var(--ease), transform .4s var(--ease);
 }
 
@@ -449,7 +459,6 @@ body.nav-open .nav { background: var(--ink); color: var(--red); }
 }
 
 .showreel.is-playing .showreel__btn { opacity: 0; pointer-events: none; }
-.showreel.is-playing .showreel__video { cursor: pointer; }
 
 /* ------------------------------------------------------ section heads --- */
 
@@ -806,9 +815,6 @@ main { flex: 1 0 auto; }
 
 /* on phones the homepage hero and the footer each fill one screen */
 @media (max-width: 720px) {
-  /* hero + sticky header together make up the first screen */
-  .hero-home { min-height: calc(100svh - 72px); }
-
   /* footer: links at the top, wordmark pushed to the bottom */
   .footer {
     min-height: 100svh;
@@ -819,18 +825,24 @@ main { flex: 1 0 auto; }
   .footer__wordmark { margin-top: auto; padding-top: 48px; }
 }
 
-/* --------------------------------------------------------- cursor fx --- */
+/* ------------------------------------------------------------ cursor --- */
 
-.cursor-fx {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
+/* the Cresco mark replaces the pointer everywhere; red over black areas */
+html {
+  cursor: url(../images/cursor.png) 16 16, auto;
+  cursor: -webkit-image-set(url(../images/cursor.png) 1x, url(../images/cursor@2x.png) 2x) 16 16, auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cursor-fx { display: none; }
+.is-dark,
+.marquee-section,
+.footer,
+.nav__overlay,
+body.nav-open .nav {
+  cursor: url(../images/cursor-red.png) 16 16, auto;
+  cursor: -webkit-image-set(url(../images/cursor-red.png) 1x, url(../images/cursor-red@2x.png) 2x) 16 16, auto;
 }
+
+a, button, video { cursor: inherit; }
 
 /* --------------------------------------------------------- animation --- */
 

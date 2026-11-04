@@ -71,6 +71,39 @@
     });
   }
 
+  /* --- scroll-linked statement weight ------------------------------------
+     As the statement travels up the screen its rows turn bold one after
+     another, top to bottom; once it has passed, all rows go thin. */
+  var weightBlocks = document.querySelectorAll('[data-weight-scroll]');
+
+  if (weightBlocks.length && !reduced) {
+    var updateWeights = function () {
+      var vh = window.innerHeight;
+      Array.prototype.forEach.call(weightBlocks, function (block) {
+        var rows = block.querySelectorAll('.big-line__row');
+        var rect = block.getBoundingClientRect();
+        // 0 when the block's centre is at the bottom edge, 1 at the top edge
+        var t = 1 - (rect.top + rect.height / 2) / vh;
+        // first row until 0.4, then each following row for a 0.15 step
+        var active = t < 0.4 ? 0 : Math.floor((t - 0.4) / 0.15) + 1;
+        if (active >= rows.length) active = -1;
+        Array.prototype.forEach.call(rows, function (row, i) {
+          row.classList.toggle('is-bold', i === active);
+        });
+      });
+      weightTicking = false;
+    };
+
+    var weightTicking = false;
+    window.addEventListener('scroll', function () {
+      if (weightTicking) return;
+      weightTicking = true;
+      window.requestAnimationFrame(updateWeights);
+    }, { passive: true });
+    window.addEventListener('resize', updateWeights);
+    updateWeights();
+  }
+
   /* --- scroll-linked marquee -------------------------------------------- */
   var tracks = document.querySelectorAll('[data-marquee-track]');
 
@@ -108,106 +141,6 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', function () { measure(); apply(); });
   }
-
-  /* --- cursor water ripple -----------------------------------------------
-     A ripple is spawned on pointer move / touch / click: a set of
-     concentric rings that grow and fade like a drop hitting water, drawn on
-     a canvas overlay (multiply blend, monochrome, on-brand). Purely a
-     visual overlay — it never touches the DOM, so page text and images are
-     never distorted. No dependencies. */
-  if (!reduced && window.matchMedia('(pointer: fine), (pointer: coarse)').matches) {
-    var canvas = document.createElement('canvas');
-    canvas.className = 'cursor-fx';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(canvas);
-    var ctx = canvas.getContext('2d');
-
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var ripples = [];
-    var MAX_RIPPLES = 30;
-    var SPAWN_DIST = 28;      // min px moved before a new ripple spawns
-    var LIFESPAN = 1100;      // ms
-    var lastX = null, lastY = null;
-
-    function resize() {
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    function spawn(x, y, strong) {
-      if (ripples.length >= MAX_RIPPLES) ripples.shift();
-      ripples.push({
-        x: x, y: y, born: performance.now(),
-        maxR: strong ? 120 + Math.random() * 30 : 58 + Math.random() * 24,
-        startAlpha: strong ? 0.45 : 0.24
-      });
-    }
-
-    function maybeSpawn(x, y) {
-      if (lastX === null) { lastX = x; lastY = y; return; }
-      var dx = x - lastX, dy = y - lastY;
-      if (Math.sqrt(dx * dx + dy * dy) >= SPAWN_DIST) {
-        spawn(x, y, false);
-        lastX = x; lastY = y;
-      }
-    }
-
-    window.addEventListener('pointermove', function (e) {
-      maybeSpawn(e.clientX, e.clientY);
-    }, { passive: true });
-
-    window.addEventListener('pointerdown', function (e) {
-      spawn(e.clientX, e.clientY, true);
-      lastX = e.clientX; lastY = e.clientY;
-    }, { passive: true });
-
-    var fgColor = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim() || '#111111';
-
-    // a real drop produces a leading wave plus one or two fainter, slower
-    // trailing rings behind it — this is what reads as "water" rather than
-    // a single expanding circle.
-    var WAVES = [
-      { delay: 0, radiusMul: 1, alphaMul: 1, widthMul: 1 },
-      { delay: 90, radiusMul: 0.72, alphaMul: 0.55, widthMul: 0.8 },
-      { delay: 200, radiusMul: 0.46, alphaMul: 0.32, widthMul: 0.6 }
-    ];
-
-    function tick(now) {
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      ctx.globalCompositeOperation = 'multiply';
-
-      ripples = ripples.filter(function (r) {
-        return (now - r.born) < LIFESPAN + WAVES[WAVES.length - 1].delay;
-      });
-
-      ripples.forEach(function (r) {
-        WAVES.forEach(function (w) {
-          var t = (now - r.born - w.delay) / LIFESPAN;
-          if (t < 0 || t >= 1) return;
-          var eased = 1 - Math.pow(1 - t, 3);
-          var radius = (3 + eased * r.maxR) * w.radiusMul;
-          var alpha = r.startAlpha * w.alphaMul * (1 - t);
-
-          ctx.beginPath();
-          ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
-          ctx.strokeStyle = fgColor;
-          ctx.globalAlpha = alpha;
-          ctx.lineWidth = Math.max(0.5, 2.2 * w.widthMul * (1 - t));
-          ctx.stroke();
-        });
-      });
-
-      ctx.globalAlpha = 1;
-      window.requestAnimationFrame(tick);
-    }
-    window.requestAnimationFrame(tick);
-  }
-
 
   /* --- showreel: stopped by default; the button plays it with sound,
          clicking the video pauses it (no native controls overlay) -------- */
